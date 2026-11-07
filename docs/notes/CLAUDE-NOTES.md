@@ -19,7 +19,7 @@ error hit and its fix, every limitation, and every suggestion, newest first.
 > Working notes, not product docs. Scope lives in `.kiro/specs/mvp/`. The
 > portfolio before/after log lives in `docs/v1-vs-v2.md`.
 
-Last updated: 2026-11-07 (design ideas borrowed from the portfolio site).
+Last updated: 2026-11-07 (portfolio design ideas, admin dashboard).
 
 ## Where we are (Claude's side)
 
@@ -170,6 +170,30 @@ All ten went into one PR, all token-based so both themes keep correct contrast:
 - **How it was checked:** lint, typecheck, tests and `next build` pass. The UI
   was driven in a browser against a tiny fake PostgREST server (not the real
   DB), so poster images and real numbers still need a look on the live site.
+
+## Admin dashboard (2026-11-07)
+
+The owner pointed out v1 had a full admin console and v2 had only two review
+queues, with nothing linking to them and no `/admin` page (404). Added, in the
+same PR as the design ideas:
+
+- `/admin` landing: pending-queue cards with counts, six headline numbers
+  (events live, awaiting payment, verified organisers, members, paid listings,
+  revenue) and a recent-activity feed from `audit_log`.
+- `/admin/audit`: paged audit log (50 per page) and `/admin/audit/export`, a
+  CSV download of the newest 5000 entries. `lib/csv.ts` defuses spreadsheet
+  formulas (cells starting `= + - @`), with tests.
+- `AdminNav` tabs on every admin page; an "Admin" chip in the header for
+  admins (hidden on phones) and a button on the account page.
+- Migration `20261107100000_admin_dashboard.sql`: admins can read all payments
+  (revenue). Owners still read only their own. pgTAP test in
+  `supabase/tests/admin_dashboard_test.sql` (written, **not run**: no local
+  Supabase here, so CI's `database` job is its first run).
+- Still missing vs v1: charts, user management (suspend / reactivate) and top
+  campaigns. Ads, spots and catches don't exist in v2 yet.
+- Checked in a browser against a fake data server with the admin role forced
+  by a temporary patch (reverted, not committed). The real admin sign-in path
+  was not exercised.
 
 ## Launch page (2026-10-27)
 

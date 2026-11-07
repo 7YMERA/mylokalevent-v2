@@ -41,6 +41,15 @@ async function AccountDetails() {
         </div>
       </dl>
 
+      {user.role === "admin" && (
+        <Link
+          href={localePath(locale, "/admin")}
+          className="mt-4 inline-block rounded-full bg-primary px-5 py-2.5 font-semibold text-primary-foreground hover:bg-primary-hover"
+        >
+          {t.admin.dashboard.title} →
+        </Link>
+      )}
+
       <section id="saved" className="mt-10 scroll-mt-20">
         <h2 className="font-display text-xl font-bold tracking-tight">
           {t.engagement.savedEvents}

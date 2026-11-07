@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { AdminNav } from "@/components/admin-nav";
 import { SiteHeader } from "@/components/site-header";
 import { getLocale, getMessages } from "@/i18n/messages";
 import { requireUser } from "@/lib/auth";
@@ -80,6 +81,7 @@ export default async function AdminOrganisersPage() {
             <p className="text-muted-foreground">{t.common.pleaseWait}</p>
           }
         >
+          <AdminNav current="organisers" />
           <ReviewQueue />
         </Suspense>
       </main>

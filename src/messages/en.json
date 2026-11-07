@@ -27,7 +27,8 @@
       "search": "Search",
       "saved": "Saved",
       "account": "Account"
-    }
+    },
+    "admin": "Admin"
   },
   "common": {
     "free": "Free",
@@ -396,6 +397,58 @@
       "actionFailed": "That didn't work. Please try again.",
       "verifiedToast": "Organiser verified.",
       "rejectedToast": "Organiser rejected."
+    },
+    "nav": {
+      "label": "Admin sections",
+      "dashboard": "Dashboard",
+      "events": "Events",
+      "organisers": "Organisers",
+      "audit": "Audit log"
+    },
+    "dashboard": {
+      "title": "Admin dashboard",
+      "heading": "Admin dashboard",
+      "lead": "What needs a decision, and how the site is doing.",
+      "queuesHeading": "Needs your review",
+      "openQueue": "Open queue",
+      "allClear": "All clear",
+      "queueEvents": "Events in review",
+      "queueOrganisers": "Organiser applications",
+      "statsHeading": "At a glance",
+      "eventsLive": "Events live",
+      "eventsAwaitingPayment": "Awaiting payment",
+      "organisersVerified": "Verified organisers",
+      "members": "Members",
+      "revenue": "Revenue",
+      "paymentsPaid": "Paid listings",
+      "activityHeading": "Recent activity",
+      "activityEmpty": "Nothing has happened yet.",
+      "viewAll": "Full audit log",
+      "by": "by {name}",
+      "system": "System"
+    },
+    "audit": {
+      "title": "Audit log",
+      "heading": "Audit log",
+      "lead": "Every admin decision and payment event, newest first.",
+      "empty": "The audit log is empty.",
+      "time": "When",
+      "actor": "Who",
+      "action": "What",
+      "target": "Target",
+      "reason": "Reason",
+      "export": "Export CSV",
+      "newer": "Newer",
+      "older": "Older",
+      "page": "Page {n}"
+    },
+    "actions": {
+      "event.set_status": "Event status changed",
+      "organiser.set_verification": "Organiser verification changed",
+      "user.set_status": "Member status changed",
+      "payment.confirmed": "Payment confirmed",
+      "payment.expired": "Payment expired",
+      "payment.amount_mismatch": "Payment amount mismatch"
     }
   },
   "apply": {
