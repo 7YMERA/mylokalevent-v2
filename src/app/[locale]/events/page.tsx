@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { CategoryBadge } from "@/components/category-badge";
+import { FeedDock } from "@/components/feed-dock";
 import { SiteHeader } from "@/components/site-header";
 import { format, localePath } from "@/i18n/config";
 import { formatEventDate } from "@/i18n/format";
@@ -80,7 +81,7 @@ async function SearchBody({ searchParams }: Search) {
         : MALAYSIA_BBOX;
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10">
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-10 pb-24 md:pb-10">
       <h1 className="font-display text-3xl font-extrabold tracking-tight">
         {s.heading}
       </h1>
@@ -251,6 +252,9 @@ export default async function EventsSearchPage({ searchParams }: Search) {
         }
       >
         <SearchBody searchParams={searchParams} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <FeedDock />
       </Suspense>
     </>
   );

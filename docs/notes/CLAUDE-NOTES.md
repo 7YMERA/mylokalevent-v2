@@ -19,7 +19,7 @@ error hit and its fix, every limitation, and every suggestion, newest first.
 > Working notes, not product docs. Scope lives in `.kiro/specs/mvp/`. The
 > portfolio before/after log lives in `docs/v1-vs-v2.md`.
 
-Last updated: 2026-10-28 (open events feed on the homepage).
+Last updated: 2026-11-07 (design ideas borrowed from the portfolio site).
 
 ## Where we are (Claude's side)
 
@@ -144,6 +144,32 @@ the `theme=dark` cookie was still there, so a reload brought Dark back.
 - **Watch for:** the same remount happens on any navigation that changes a root
   param. Anything else that sets attributes on `<html>` from client code needs
   the same treatment.
+
+## Design ideas from the portfolio site (2026-11-07)
+
+The owner asked to borrow ideas from their portfolio (`7YMERA/7ymera.github.io`).
+All ten went into one PR, all token-based so both themes keep correct contrast:
+
+- **Aurora hero** (`.aurora` in `globals.css`): three soft blobs coloured from
+  the tokens, on one layer that slides with `transform`. No image, no live blur.
+- **Songket band** (`.songket`): a row of pucuk rebung triangles under the hero.
+- **Glow cards** (`Spotlight` + `.glow-card`): lift and cursor glow, plus the
+  first uploaded poster as the card image (batched signed URLs), with the
+  category gradient as the fallback.
+- **Filter chips with counts** (`countFeedByCategory`).
+- **Bottom dock** (`BottomDock`, `FeedDock`): phone-only; can be tucked away,
+  remembered in `localStorage`. On the home and search pages.
+- **Ctrl/Cmd+K quick search** (`QuickSearch`, native `<dialog>`).
+- **Organiser application progress bar** (`StepBar`).
+- **Rotating hero word** (`RotatingWord`) and **stats strip** (`StatsStrip`,
+  `NumberTicker`): the strip only shows when there are upcoming events, and
+  both stay still under `prefers-reduced-motion`.
+- **v1 vs v2 slider** (`BeforeAfter`) on `/design`, using `public/compare/`.
+- **Gotcha:** the new DB reads that use "today" call `connection()` first.
+  Without it Next 16 stops the prerender with "unstable value `new Date()`".
+- **How it was checked:** lint, typecheck, tests and `next build` pass. The UI
+  was driven in a browser against a tiny fake PostgREST server (not the real
+  DB), so poster images and real numbers still need a look on the live site.
 
 ## Launch page (2026-10-27)
 

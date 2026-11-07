@@ -1,5 +1,7 @@
 import "server-only";
 
+import { connection } from "next/server";
+
 import { createClient } from "@/lib/supabase/server";
 
 export type EventDetail = {
@@ -236,6 +238,8 @@ export type FeedEvent = {
   venue: string;
   feeMyr: number;
   organiser: { slug: string; name: string } | null;
+  // Signed URL of the first uploaded poster, or null (card shows a gradient).
+  posterUrl: string | null;
 };
 
 // The homepage feed: approved events that haven't ended yet, soonest first,
@@ -245,9 +249,7 @@ export async function listFeedEvents(
 ): Promise<FeedEvent[]> {
   const supabase = await createClient();
   // Keep today's events in the feed until the day is over (Malaysian time).
-  const startOfToday = new Date(
-    `${new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" })}T00:00:00+08:00`,
-  ).toISOString();
+  const startOfToday = startOfTodayMy();
 
   // An inner join lets the category filter run in the database, so the limit
   // applies to matching events only.
@@ -255,7 +257,8 @@ export async function listFeedEvents(
     .from("events")
     .select(
       `slug, title, starts_at, state, district, venue, fee_myr, status,
-       categories${categorySlug ? "!inner" : ""}(slug), organisers(slug, name)`,
+       categories${categorySlug ? "!inner" : ""}(slug), organisers(slug, name),
+       event_images(storage_path, position)`,
     )
     .eq("status", "approved")
     .gte("starts_at", startOfToday)
@@ -278,11 +281,25 @@ export async function listFeedEvents(
     categories: { slug: string } | { slug: string }[] | null;
     organisers:
       { slug: string; name: string } | { slug: string; name: string }[] | null;
+    event_images: { storage_path: string; position: number }[] | null;
   }>;
 
-  return rows.map((row) => {
+  // One batched call signs every poster, instead of one request per card.
+  const firstPaths = rows.map(
+    (row) =>
+      (row.event_images ?? [])
+        .slice()
+        .sort((a, b) => a.position - b.position)[0]?.storage_path ?? null,
+  );
+  const signed = await signedImageUrls(
+    firstPaths.filter((path): path is string => path !== null),
+  );
+
+  return rows.map((row, index) => {
     const organiser = one(row.organisers);
+    const path = firstPaths[index];
     return {
+      posterUrl: path ? (signed.get(path) ?? null) : null,
       slug: row.slug,
       title: row.title,
       categorySlug: one(row.categories)?.slug as FeedEvent["categorySlug"],
@@ -359,4 +376,78 @@ export async function signedImageUrl(path: string): Promise<string | null> {
     .from("event-images")
     .createSignedUrl(path, 60 * 60);
   return data?.signedUrl ?? null;
+}
+
+// Signed URLs for several private storage objects in one request, keyed by path.
+export async function signedImageUrls(
+  paths: string[],
+): Promise<Map<string, string>> {
+  const urls = new Map<string, string>();
+  if (paths.length === 0) return urls;
+  const supabase = await createClient();
+  const { data } = await supabase.storage
+    .from("event-images")
+    .createSignedUrls(paths, 60 * 60);
+  for (const item of data ?? []) {
+    if (item.path && item.signedUrl) urls.set(item.path, item.signedUrl);
+  }
+  return urls;
+}
+
+// Start of today in Malaysian time, as an ISO string (the feed's cut-off).
+function startOfTodayMy(): string {
+  return new Date(
+    `${new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kuala_Lumpur" })}T00:00:00+08:00`,
+  ).toISOString();
+}
+
+// How many upcoming events each category has, for the filter chips.
+export async function countFeedByCategory(): Promise<Record<string, number>> {
+  // "Today" is per visit, so wait for the request before reading the clock.
+  await connection();
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("events")
+    .select("categories(slug)")
+    .eq("status", "approved")
+    .gte("starts_at", startOfTodayMy())
+    .limit(500);
+
+  const counts: Record<string, number> = {};
+  for (const row of (data ?? []) as unknown as Array<{
+    categories: { slug: string } | { slug: string }[] | null;
+  }>) {
+    const slug = (
+      Array.isArray(row.categories) ? row.categories[0] : row.categories
+    )?.slug;
+    if (slug) counts[slug] = (counts[slug] ?? 0) + 1;
+  }
+  return counts;
+}
+
+export type FeedStats = { events: number; organisers: number; states: number };
+
+// Real numbers for the homepage strip: upcoming events, verified organisers
+// and the states they cover.
+export async function getFeedStats(): Promise<FeedStats> {
+  await connection();
+  const supabase = await createClient();
+  const [events, organisers] = await Promise.all([
+    supabase
+      .from("events")
+      .select("state")
+      .eq("status", "approved")
+      .gte("starts_at", startOfTodayMy())
+      .limit(500),
+    supabase
+      .from("organisers")
+      .select("id", { count: "exact", head: true })
+      .eq("verification", "verified"),
+  ]);
+  const rows = (events.data ?? []) as { state: string }[];
+  return {
+    events: rows.length,
+    organisers: organisers.count ?? 0,
+    states: new Set(rows.map((row) => row.state)).size,
+  };
 }

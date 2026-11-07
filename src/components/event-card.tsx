@@ -12,7 +12,7 @@ export type EventPreview = {
   verified?: boolean;
 };
 
-const banner: Record<Category, string> = {
+export const banner: Record<Category, string> = {
   competition: "from-cat-competition/25 to-cat-competition/5",
   market: "from-cat-market/25 to-cat-market/5",
   pond: "from-cat-pond/25 to-cat-pond/5",

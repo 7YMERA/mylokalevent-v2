@@ -3,13 +3,23 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { CategoryBadge } from "@/components/category-badge";
+import { banner } from "@/components/event-card";
+import { FeedDock } from "@/components/feed-dock";
+import { RotatingWord } from "@/components/rotating-word";
 import { SiteHeader } from "@/components/site-header";
+import { Spotlight } from "@/components/spotlight";
+import { StatsStrip } from "@/components/stats-strip";
 import { format, localePath, type Locale } from "@/i18n/config";
 import { formatEventDate } from "@/i18n/format";
 import { getLocale, getMessages, type Messages } from "@/i18n/messages";
 import { pageMetadata } from "@/i18n/metadata";
 import { getCurrentUser } from "@/lib/auth";
-import { listActiveCategories, listFeedEvents } from "@/lib/events";
+import {
+  countFeedByCategory,
+  getFeedStats,
+  listActiveCategories,
+  listFeedEvents,
+} from "@/lib/events";
 
 export function generateMetadata(): Promise<Metadata> {
   return pageMetadata("/");
@@ -56,7 +66,11 @@ async function Feed({
 }: Search & { locale: Locale; t: Messages }) {
   const params = await searchParams;
   const raw = params.category;
-  const categories = await listActiveCategories();
+  const [categories, counts] = await Promise.all([
+    listActiveCategories(),
+    countFeedByCategory(),
+  ]);
+  const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
   const wanted = Array.isArray(raw) ? raw[0] : raw;
   // Ignore unknown slugs rather than showing an empty feed.
   const active = categories.some((c) => c.slug === wanted) ? wanted : undefined;
@@ -64,11 +78,18 @@ async function Feed({
   const feed = t.feed;
 
   const chip = (selected: boolean) =>
-    `whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
+    `inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
       selected
         ? "border-primary bg-primary text-primary-foreground"
-        : "border-border bg-surface hover:bg-surface-muted"
+        : "border-border bg-surface hover:border-primary hover:bg-surface-muted"
     }`;
+  const count = (selected: boolean, n: number) => (
+    <span
+      className={`font-mono text-xs ${selected ? "" : "text-muted-foreground"}`}
+    >
+      {n}
+    </span>
+  );
 
   return (
     <>
@@ -81,6 +102,7 @@ async function Feed({
               className={chip(!active)}
             >
               {feed.all}
+              {count(!active, total)}
             </Link>
           </li>
           {categories.map((c) => (
@@ -91,6 +113,7 @@ async function Feed({
                 className={chip(active === c.slug)}
               >
                 {locale === "ms" ? c.nameMs : c.nameEn}
+                {count(active === c.slug, counts[c.slug] ?? 0)}
               </Link>
             </li>
           ))}
@@ -102,49 +125,75 @@ async function Feed({
           {active ? feed.empty : feed.emptyAll}
         </p>
       ) : (
-        <ul className="mt-6 grid gap-4">
+        <Spotlight className="mt-6 grid gap-4">
           {events.map((event) => (
             <li key={event.slug}>
-              <article className="relative rounded-2xl border border-border bg-surface p-5 shadow-sm transition-shadow hover:shadow-md">
-                <div className="flex items-center justify-between gap-3">
-                  <CategoryBadge category={event.categorySlug} />
-                  <span className="whitespace-nowrap text-sm font-semibold">
-                    {event.feeMyr === 0 ? t.common.free : `RM${event.feeMyr}`}
-                  </span>
-                </div>
-                <h3 className="mt-3 font-display text-xl font-semibold leading-snug">
-                  {/* Stretched link: the whole card opens the event. */}
-                  <Link
-                    href={localePath(locale, `/events/${event.slug}`)}
-                    className="after:absolute after:inset-0 after:rounded-2xl"
-                  >
-                    {event.title}
-                  </Link>
-                </h3>
-                {event.organiser && (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {format(feed.by, { name: event.organiser.name })}
-                  </p>
+              <article
+                data-glow
+                className="glow-card relative overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
+              >
+                {event.posterUrl ? (
+                  // Signed storage URL, so a plain img (no image optimiser).
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={event.posterUrl}
+                    alt=""
+                    loading="lazy"
+                    className="h-36 w-full object-cover"
+                  />
+                ) : (
+                  <div
+                    aria-hidden="true"
+                    className={`h-16 bg-gradient-to-br ${banner[event.categorySlug]}`}
+                  />
                 )}
-                <dl className="mt-4 grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
-                  <div>
-                    <dt className="sr-only">{t.common.date}</dt>
-                    <dd>{formatEventDate(event.startsAt, locale)}</dd>
+                <div className="p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <CategoryBadge category={event.categorySlug} />
+                    <span className="whitespace-nowrap text-sm font-semibold">
+                      {event.feeMyr === 0 ? t.common.free : `RM${event.feeMyr}`}
+                    </span>
                   </div>
-                  <div>
-                    <dt className="sr-only">{t.common.place}</dt>
-                    <dd>
-                      {event.venue}, {event.district}, {event.state}
-                    </dd>
-                  </div>
-                </dl>
+                  <h3 className="mt-3 font-display text-xl font-semibold leading-snug">
+                    {/* Stretched link: the whole card opens the event. */}
+                    <Link
+                      href={localePath(locale, `/events/${event.slug}`)}
+                      className="after:absolute after:inset-0 after:rounded-2xl"
+                    >
+                      {event.title}
+                    </Link>
+                  </h3>
+                  {event.organiser && (
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {format(feed.by, { name: event.organiser.name })}
+                    </p>
+                  )}
+                  <dl className="mt-4 grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
+                    <div>
+                      <dt className="sr-only">{t.common.date}</dt>
+                      <dd>{formatEventDate(event.startsAt, locale)}</dd>
+                    </div>
+                    <div>
+                      <dt className="sr-only">{t.common.place}</dt>
+                      <dd>
+                        {event.venue}, {event.district}, {event.state}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
               </article>
             </li>
           ))}
-        </ul>
+        </Spotlight>
       )}
     </>
   );
+}
+
+// Hero numbers read the DB, so they stream in after the headline.
+async function HeroStats({ t }: { t: Messages }) {
+  const stats = await getFeedStats();
+  return <StatsStrip stats={stats} labels={t.feed.stats} />;
 }
 
 function FeedSkeleton() {
@@ -215,12 +264,17 @@ export default async function Home({ searchParams }: Search) {
       />
       <main className="flex-1">
         {/* Short intro: what this is, in one glance, then straight to events. */}
-        <section className="bg-gradient-to-br from-hero-from to-hero-to text-hero-foreground">
-          <div className="mx-auto max-w-6xl px-4 py-10 sm:py-12">
+        <section className="relative overflow-hidden bg-gradient-to-br from-hero-from to-hero-to text-hero-foreground">
+          <div className="aurora" aria-hidden="true" />
+          <div className="relative mx-auto max-w-6xl px-4 py-10 sm:py-12">
             <h1 className="max-w-2xl font-display text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
               {feed.title}
             </h1>
-            <p className="mt-3 max-w-xl text-lg opacity-90">{feed.lead}</p>
+            <p className="mt-3 font-display text-xl sm:text-2xl">
+              {feed.rotate.lead}{" "}
+              <RotatingWord words={feed.rotate.words.split("|")} />
+            </p>
+            <p className="mt-3 max-w-xl text-lg">{feed.lead}</p>
             <ul className="mt-6 flex flex-wrap gap-2">
               {features.map((feature) => (
                 <li
@@ -238,8 +292,12 @@ export default async function Home({ searchParams }: Search) {
             >
               {feed.about} →
             </Link>
+            <Suspense fallback={null}>
+              <HeroStats t={t} />
+            </Suspense>
           </div>
         </section>
+        <div className="songket text-accent" aria-hidden="true" />
 
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <section aria-labelledby="feed-heading" className="min-w-0">
@@ -285,9 +343,12 @@ export default async function Home({ searchParams }: Search) {
           </aside>
         </div>
       </main>
-      <footer className="mx-auto w-full max-w-6xl px-4 py-8 text-sm text-muted-foreground">
+      <footer className="mx-auto w-full max-w-6xl px-4 pt-8 pb-24 text-sm text-muted-foreground md:pb-8">
         {t.common.footer}
       </footer>
+      <Suspense fallback={null}>
+        <FeedDock />
+      </Suspense>
     </>
   );
 }

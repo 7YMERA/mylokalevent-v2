@@ -41,7 +41,7 @@ async function AccountDetails() {
         </div>
       </dl>
 
-      <section className="mt-10">
+      <section id="saved" className="mt-10 scroll-mt-20">
         <h2 className="font-display text-xl font-bold tracking-tight">
           {t.engagement.savedEvents}
         </h2>

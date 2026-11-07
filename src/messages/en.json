@@ -11,7 +11,23 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "explore": "Find events",
-    "about": "About"
+    "about": "About",
+    "quick": {
+      "open": "Search events or jump to a page",
+      "placeholder": "Search events, or jump to a page",
+      "searchFor": "Search events for “{q}”",
+      "pages": "Go to",
+      "empty": "Nothing matches. Press Enter to search events."
+    },
+    "dock": {
+      "nav": "Quick links",
+      "hide": "Hide the bottom bar",
+      "show": "Menu",
+      "home": "Home",
+      "search": "Search",
+      "saved": "Saved",
+      "account": "Account"
+    }
   },
   "common": {
     "free": "Free",
@@ -224,6 +240,15 @@
       "title": "Running an event?",
       "body": "Clubs, cooperatives and fishing ponds can list their events here.",
       "cta": "Become an organiser"
+    },
+    "rotate": {
+      "lead": "For",
+      "words": "anglers|fishing clubs|fishing ponds|communities"
+    },
+    "stats": {
+      "events": "upcoming events",
+      "organisers": "verified organisers",
+      "states": "states"
     }
   },
   "fields": {
@@ -388,7 +413,14 @@
     "ssm": "SSM number (optional)",
     "ssmHint": "Speeds up verification. Leave blank if you don't have one.",
     "submit": "Submit application",
-    "success": "Application submitted. We'll review it and email you."
+    "success": "Application submitted. We'll review it and email you.",
+    "steps": {
+      "label": "Application progress",
+      "applied": "Applied",
+      "review": "In review",
+      "verified": "Verified",
+      "rejected": "Not approved"
+    }
   },
   "eventForm": {
     "title": "Create an event",
