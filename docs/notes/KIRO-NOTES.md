@@ -1,5 +1,7 @@
 # KIRO-NOTES — handoff for the next session (Claude / another device)
 
+> Start with [`AGENT-CORNER.md`](AGENT-CORNER.md). This file is the detail log; open it only when you need the full history.
+
 ## Why this file exists (read first)
 
 The product owner (GitHub: 7YMERA) is building MyLokalEvent 2.0 across **two
