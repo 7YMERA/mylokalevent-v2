@@ -1,5 +1,7 @@
 # CLAUDE-NOTES — handoff from Claude (cloud) to Kiro / the owner
 
+> Start with [`AGENT-CORNER.md`](AGENT-CORNER.md). This file is the detail log; open it only when you need the full history.
+
 ## Why this file exists (read first)
 
 MyLokalEvent 2.0 is built by the owner (GitHub: 7YMERA) with two assistants:
