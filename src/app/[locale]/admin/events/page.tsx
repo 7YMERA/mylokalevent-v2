@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { AdminNav } from "@/components/admin-nav";
 import { SiteHeader } from "@/components/site-header";
 import { formatEventDate } from "@/i18n/format";
 import { getLocale, getMessages } from "@/i18n/messages";
@@ -83,6 +84,7 @@ export default async function AdminEventsPage() {
             <p className="text-muted-foreground">{t.common.pleaseWait}</p>
           }
         >
+          <AdminNav current="events" />
           <ReviewQueue />
         </Suspense>
       </main>

@@ -24,17 +24,27 @@ export async function AuthStatus() {
   }
 
   return (
-    <Link
-      href={localePath(locale, "/account")}
-      className="flex items-center gap-2 rounded-full border border-border bg-surface py-1 pr-3 pl-1 text-sm font-semibold"
-    >
-      <span
-        aria-hidden="true"
-        className="grid size-7 place-items-center rounded-full bg-accent text-accent-foreground"
+    <>
+      {user.role === "admin" && (
+        <Link
+          href={localePath(locale, "/admin")}
+          className="hidden rounded-full border border-primary px-3 py-1.5 text-sm font-semibold text-primary hover:bg-surface-muted sm:inline-block"
+        >
+          {t.header.admin}
+        </Link>
+      )}
+      <Link
+        href={localePath(locale, "/account")}
+        className="flex items-center gap-2 rounded-full border border-border bg-surface py-1 pr-3 pl-1 text-sm font-semibold"
       >
-        {user.displayName.charAt(0).toUpperCase()}
-      </span>
-      <span className="max-w-32 truncate">{user.displayName}</span>
-    </Link>
+        <span
+          aria-hidden="true"
+          className="grid size-7 place-items-center rounded-full bg-accent text-accent-foreground"
+        >
+          {user.displayName.charAt(0).toUpperCase()}
+        </span>
+        <span className="max-w-32 truncate">{user.displayName}</span>
+      </Link>
+    </>
   );
 }

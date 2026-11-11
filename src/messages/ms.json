@@ -11,7 +11,24 @@
     "themeLight": "Cerah",
     "themeDark": "Gelap",
     "explore": "Cari acara",
-    "about": "Tentang"
+    "about": "Tentang",
+    "quick": {
+      "open": "Cari acara atau terus ke halaman",
+      "placeholder": "Cari acara, atau terus ke halaman",
+      "searchFor": "Cari acara untuk “{q}”",
+      "pages": "Pergi ke",
+      "empty": "Tiada padanan. Tekan Enter untuk cari acara."
+    },
+    "dock": {
+      "nav": "Pautan pantas",
+      "hide": "Sorok bar bawah",
+      "show": "Menu",
+      "home": "Utama",
+      "search": "Cari",
+      "saved": "Simpan",
+      "account": "Akaun"
+    },
+    "admin": "Admin"
   },
   "common": {
     "free": "Percuma",
@@ -224,6 +241,15 @@
       "title": "Anjur acara?",
       "body": "Kelab, koperasi atau kolam pancing boleh senaraikan acara di sini.",
       "cta": "Jadi penganjur"
+    },
+    "rotate": {
+      "lead": "Untuk",
+      "words": "pemancing|kelab memancing|kolam pancing|komuniti"
+    },
+    "stats": {
+      "events": "acara akan datang",
+      "organisers": "penganjur disahkan",
+      "states": "negeri"
     }
   },
   "fields": {
@@ -371,6 +397,58 @@
       "actionFailed": "Tidak berjaya. Sila cuba lagi.",
       "verifiedToast": "Penganjur disahkan.",
       "rejectedToast": "Penganjur ditolak."
+    },
+    "nav": {
+      "label": "Bahagian admin",
+      "dashboard": "Papan pemuka",
+      "events": "Acara",
+      "organisers": "Penganjur",
+      "audit": "Log audit"
+    },
+    "dashboard": {
+      "title": "Papan pemuka admin",
+      "heading": "Papan pemuka admin",
+      "lead": "Apa yang perlu diputuskan, dan keadaan laman sekarang.",
+      "queuesHeading": "Perlu disemak",
+      "openQueue": "Buka senarai",
+      "allClear": "Semua beres",
+      "queueEvents": "Acara menunggu semakan",
+      "queueOrganisers": "Permohonan penganjur",
+      "statsHeading": "Sekali pandang",
+      "eventsLive": "Acara tersiar",
+      "eventsAwaitingPayment": "Menunggu bayaran",
+      "organisersVerified": "Penganjur disahkan",
+      "members": "Ahli",
+      "revenue": "Hasil",
+      "paymentsPaid": "Penyenaraian berbayar",
+      "activityHeading": "Aktiviti terkini",
+      "activityEmpty": "Belum ada apa-apa lagi.",
+      "viewAll": "Log audit penuh",
+      "by": "oleh {name}",
+      "system": "Sistem"
+    },
+    "audit": {
+      "title": "Log audit",
+      "heading": "Log audit",
+      "lead": "Setiap keputusan admin dan kejadian bayaran, yang terbaru dahulu.",
+      "empty": "Log audit masih kosong.",
+      "time": "Bila",
+      "actor": "Siapa",
+      "action": "Apa",
+      "target": "Sasaran",
+      "reason": "Sebab",
+      "export": "Eksport CSV",
+      "newer": "Lebih baru",
+      "older": "Lebih lama",
+      "page": "Muka surat {n}"
+    },
+    "actions": {
+      "event.set_status": "Status acara ditukar",
+      "organiser.set_verification": "Pengesahan penganjur ditukar",
+      "user.set_status": "Status ahli ditukar",
+      "payment.confirmed": "Bayaran disahkan",
+      "payment.expired": "Bayaran tamat tempoh",
+      "payment.amount_mismatch": "Jumlah bayaran tidak sepadan"
     }
   },
   "apply": {
@@ -388,7 +466,14 @@
     "ssm": "Nombor SSM (pilihan)",
     "ssmHint": "Mempercepatkan pengesahan. Biarkan kosong jika tiada.",
     "submit": "Hantar permohonan",
-    "success": "Permohonan dihantar. Kami akan menyemaknya dan e-mel anda."
+    "success": "Permohonan dihantar. Kami akan menyemaknya dan e-mel anda.",
+    "steps": {
+      "label": "Kemajuan permohonan",
+      "applied": "Dihantar",
+      "review": "Disemak",
+      "verified": "Disahkan",
+      "rejected": "Tidak diluluskan"
+    }
   },
   "eventForm": {
     "title": "Cipta acara",

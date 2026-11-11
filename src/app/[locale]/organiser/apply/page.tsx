@@ -3,7 +3,8 @@ import { Suspense } from "react";
 
 import { FormAlert } from "@/components/form-field";
 import { SiteHeader } from "@/components/site-header";
-import { getLocale, getMessages } from "@/i18n/messages";
+import { StepBar, type Step } from "@/components/step-bar";
+import { getLocale, getMessages, type Messages } from "@/i18n/messages";
 import { pageMetadata } from "@/i18n/metadata";
 import { requireUser } from "@/lib/auth";
 import { getMyOrganiser } from "@/lib/organisers";
@@ -13,6 +14,34 @@ import { ApplyForm } from "./apply-form";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getMessages();
   return pageMetadata("/organiser/apply", t.apply.title);
+}
+
+// Applied is always done; review and the final step follow the verification.
+function applicationSteps(
+  verification: "none" | "pending" | "verified" | "rejected",
+  labels: Messages["apply"]["steps"],
+): Step[] {
+  return [
+    { label: labels.applied, state: "done" },
+    {
+      label: labels.review,
+      state:
+        verification === "rejected"
+          ? "failed"
+          : verification === "verified"
+            ? "done"
+            : "current",
+    },
+    {
+      label: verification === "rejected" ? labels.rejected : labels.verified,
+      state:
+        verification === "verified"
+          ? "done"
+          : verification === "rejected"
+            ? "failed"
+            : "todo",
+    },
+  ];
 }
 
 async function ApplyBody() {
@@ -29,6 +58,15 @@ async function ApplyBody() {
         {t.apply.heading}
       </h1>
       <p className="mt-2 mb-8 text-muted-foreground">{t.apply.lead}</p>
+
+      {existing && (
+        <div className="mb-6">
+          <StepBar
+            label={t.apply.steps.label}
+            steps={applicationSteps(existing.verification, t.apply.steps)}
+          />
+        </div>
+      )}
 
       {existing?.verification === "verified" ? (
         <FormAlert tone="success">{t.apply.alreadyVerified}</FormAlert>

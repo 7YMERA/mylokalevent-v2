@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { CategoryBadge, type Category } from "@/components/category-badge";
+import { BeforeAfter } from "@/components/before-after";
 import { EventCard } from "@/components/event-card";
 import { SiteHeader } from "@/components/site-header";
 
@@ -129,6 +130,25 @@ export default function DesignPage() {
           <Preview theme="light" />
           <Preview theme="dark" />
         </div>
+
+        <section className="mt-12 max-w-4xl">
+          <h2 className="font-display text-2xl font-bold tracking-tight">
+            v1 vs v2 homepage
+          </h2>
+          <p className="mt-2 text-muted-foreground">
+            Drag the handle to compare the original MyLokalEvent home page with
+            the 2.0 rebuild.
+          </p>
+          <div className="mt-5">
+            <BeforeAfter
+              before="/compare/v1-home.webp"
+              after="/compare/v2-home.webp"
+              beforeLabel="v1"
+              afterLabel="v2"
+              alt="MyLokalEvent home page"
+            />
+          </div>
+        </section>
       </main>
     </>
   );

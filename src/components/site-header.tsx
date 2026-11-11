@@ -7,6 +7,7 @@ import { getLocale, getMessages } from "@/i18n/messages";
 import { AuthStatus } from "./auth-status";
 import { LanguageSwitcher } from "./language-switcher";
 import { LogoMark } from "./logo-mark";
+import { QuickSearch } from "./quick-search";
 import { ThemeSwitcher } from "./theme-switcher";
 
 // Optional in-page links (the homepage passes its section anchors).
@@ -43,6 +44,22 @@ export async function SiteHeader({ links = [] }: { links?: HeaderLink[] }) {
           </nav>
         )}
         <div className="flex items-center gap-1.5 sm:gap-3">
+          <QuickSearch
+            locale={locale}
+            labels={t.header.quick}
+            links={[
+              { href: localePath(locale, "/events"), label: t.header.explore },
+              { href: localePath(locale, "/about"), label: t.header.about },
+              {
+                href: localePath(locale, "/organiser/apply"),
+                label: t.feed.organiser.cta,
+              },
+              {
+                href: localePath(locale, "/account"),
+                label: t.feed.hello.account,
+              },
+            ]}
+          />
           <LanguageSwitcher current={locale} label={t.header.language} />
           <ThemeSwitcher
             labels={{
